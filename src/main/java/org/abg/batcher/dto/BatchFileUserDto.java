@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class BatchFileUser {
+public class BatchFileUserDto {
     private Long id;
     private String name;
     private String email;
