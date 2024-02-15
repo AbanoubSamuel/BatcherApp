@@ -1,7 +1,6 @@
-package org.abg.batcher.repositories;
+package org.abg.batcher.repository;
 
-import org.abg.batcher.entities.BookstoreUser;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.abg.batcher.entity.BookstoreUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

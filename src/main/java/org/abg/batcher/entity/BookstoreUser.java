@@ -1,10 +1,11 @@
-package org.abg.batcher.entities;
+package org.abg.batcher.entity;
+
 
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
-import org.hibernate.id.uuid.UuidGenerator;
+import org.hibernate.id.enhanced.SequenceStyleGenerator;
 
 import java.time.LocalDate;
 
@@ -20,6 +21,14 @@ import java.time.LocalDate;
 public class BookstoreUser {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequence_user_generator")
+    @GenericGenerator(
+            name = "sequence_user_generator",
+            type = SequenceStyleGenerator.class,
+            parameters = {
+                    @Parameter(name = "sequence_name", value = "public.bookstore_user_id_seq"),
+                    @Parameter(name = "initial_value", value = "1000"),
+                    @Parameter(name = "increment_size", value = "1")
+            })
     private Long id;
 
     @Column(nullable = false)

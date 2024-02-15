@@ -1,6 +1,7 @@
 package org.abg.batcher.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.abg.batcher.utils.JsonResponse;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersInvalidException;
@@ -21,9 +22,12 @@ public class JobController {
     private final JobLauncher jobLauncher;
 
     @PostMapping("/run")
-    public ResponseEntity<Void> runJob() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
+    public ResponseEntity<JsonResponse> runJob() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
         jobLauncher.run(job, new JobParameters());
-        return new ResponseEntity<>(HttpStatus.OK);
+        JsonResponse jsonResponse = new JsonResponse<>();
+        jsonResponse.setStatus(true);
+        jsonResponse.setMessage("Job executed successfully");
+        return new ResponseEntity<>(jsonResponse,HttpStatus.OK);
     }
 }
 
