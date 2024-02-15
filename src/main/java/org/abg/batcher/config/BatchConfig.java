@@ -1,9 +1,9 @@
 package org.abg.batcher.config;
 
 import lombok.RequiredArgsConstructor;
-import org.abg.batcher.dto.BatchFileUser;
-import org.abg.batcher.entities.BookstoreUser;
-import org.abg.batcher.repositories.UserRepository;
+import org.abg.batcher.dto.BatchFileUserDto;
+import org.abg.batcher.entity.BookstoreUser;
+import org.abg.batcher.repository.UserRepository;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
@@ -19,7 +19,6 @@ import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import java.time.LocalDate;
@@ -38,7 +37,8 @@ public class BatchConfig {
 
     @Bean
     public Job updateUsersJob(Step importUsersStep, Step updateAgeTasklet) {
-        return new JobBuilder("updateUsersJob", jobRepository).incrementer(new RunIdIncrementer())
+        return new JobBuilder("updateUsersJob", jobRepository)
+                .incrementer(new RunIdIncrementer())
                 .start(importUsersStep)
                 .next(updateAgeTasklet)
                 .build();
@@ -55,7 +55,8 @@ public class BatchConfig {
 
     @Bean
     public Step importUsersStep() {
-        return new StepBuilder("importUsersStep", jobRepository).<BatchFileUser, BookstoreUser>chunk(3, transactionManager)
+        return new StepBuilder("importUsersStep", jobRepository).
+                <BatchFileUserDto, BookstoreUser>chunk(3, transactionManager)
                 .reader(reader())
                 .processor(processor())
                 .reader(reader())
@@ -64,20 +65,20 @@ public class BatchConfig {
     }
 
     @Bean
-    public ItemReader<BatchFileUser> reader() {
-        return new FlatFileItemReaderBuilder<BatchFileUser>()
+    public ItemReader<BatchFileUserDto> reader() {
+        return new FlatFileItemReaderBuilder<BatchFileUserDto>()
                 .name("readerStep")
                 .resource(new ClassPathResource("users.csv"))
                 .linesToSkip(1)
                 .delimited()
                 .delimiter(";")
                 .names("id", "name", "email", "birth_date")
-                .targetType(BatchFileUser.class)
+                .targetType(BatchFileUserDto.class)
                 .build();
     }
 
     @Bean
-    public ItemProcessor<BatchFileUser, BookstoreUser> processor() {
+    public ItemProcessor<BatchFileUserDto, BookstoreUser> processor() {
         return item -> {
             Random random = new Random();
             String generatedPassword = random.ints(48, 122)
